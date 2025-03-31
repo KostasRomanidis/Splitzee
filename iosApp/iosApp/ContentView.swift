@@ -9,10 +9,24 @@ struct ContentView: View {
     let phrases = Greeting().greet()
      
     var body: some View {
-        ZStack {
-            Text(viewModel.greetings)
+        VStack {
+            Spacer()
+            Text(viewModel.greetings).padding()
+            Spacer()
+            Button(action: {}) {
+                Text("Add an expense")
+                    .frame(maxWidth: .infinity)
+                    .padding()
+                    .background(Color.blue)
+                    .foregroundColor(.white)
+                    .cornerRadius(8)
+            }.padding()
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.white)
+        .padding(20)
     }
+        
 }
 
 extension ContentView {
