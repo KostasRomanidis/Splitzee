@@ -16,17 +16,17 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
-    
+
     sourceSets {
-        
+
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
             implementation(libs.androidx.lifecycle.viewmodel.ktx)
             implementation(libs.lifecycle.runtime.compose)
             implementation(libs.androidx.lifecycle.viewmodel.compose)
-            implementation("io.insert-koin:koin-core:3.2.0")
-            implementation("io.insert-koin:koin-android:3.2.0")
+            implementation(libs.koin.core)
+            implementation(libs.koin.android)
         }
         commonMain.dependencies {
             implementation(compose.runtime)

@@ -14,6 +14,4 @@ class App : Application() {
             modules(androidModules)
         }
     }
-
-
 }
