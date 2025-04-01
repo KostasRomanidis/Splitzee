@@ -4,16 +4,14 @@ import KMPNativeCoroutinesAsync
 import KMPNativeCoroutinesCore
 
 struct ContentView: View {
-    private(set) var viewModel: ViewModel
+    @ObservedObject var viewModel: ViewModel
     
-    let phrases = Greeting().greet()
-     
     var body: some View {
         VStack {
             Spacer()
             Text(viewModel.greetings).padding()
             Spacer()
-            Button(action: {}) {
+            Button(action: {viewModel.addExpense()}) {
                 Text("Add an expense")
                     .frame(maxWidth: .infinity)
                     .padding()
@@ -26,11 +24,16 @@ struct ContentView: View {
         .background(Color.white)
         .padding(20)
     }
-        
+    
 }
 
-extension ContentView {
-    class ViewModel: ObservableObject {
-        var greetings: String = "Welcome to Splitzee!"
+
+class ViewModel: ObservableObject {
+    private let addExpenseUC: AddExpenseUC = AddExpenseUCImpl()
+    
+    var greetings: String = "Welcome to Splitzee!"
+    
+    func addExpense() {
+        addExpenseUC.execute(expense: 10)
     }
 }

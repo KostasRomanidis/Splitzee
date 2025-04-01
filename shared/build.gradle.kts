@@ -38,6 +38,9 @@ kotlin {
             implementation("io.ktor:ktor-client-core:$ktorVersion")
             implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
             implementation("io.ktor:ktor-serialization-kotlinx-json:$ktorVersion")
+            // di
+            api("io.insert-koin:koin-core:3.2.0")
+            api("io.insert-koin:koin-test:3.2.0")
         }
 
         androidMain.dependencies {

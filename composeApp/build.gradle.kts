@@ -25,6 +25,8 @@ kotlin {
             implementation(libs.androidx.lifecycle.viewmodel.ktx)
             implementation(libs.lifecycle.runtime.compose)
             implementation(libs.androidx.lifecycle.viewmodel.compose)
+            implementation("io.insert-koin:koin-core:3.2.0")
+            implementation("io.insert-koin:koin-android:3.2.0")
         }
         commonMain.dependencies {
             implementation(compose.runtime)
