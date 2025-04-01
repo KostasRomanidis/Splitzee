@@ -4,7 +4,7 @@ import KMPNativeCoroutinesAsync
 import KMPNativeCoroutinesCore
 
 struct ContentView: View {
-    @ObservedObject var viewModel: ViewModel
+    @StateObject private var viewModel: ViewModel = ViewModel()
     
     var body: some View {
         VStack {
@@ -29,7 +29,8 @@ struct ContentView: View {
 
 
 class ViewModel: ObservableObject {
-    private let addExpenseUC: AddExpenseUC = AddExpenseUCImpl()
+    private let addExpenseUC: AddExpenseUC = UseCaseHelper().getAddExpenseUC()
+
     
     var greetings: String = "Welcome to Splitzee!"
     
