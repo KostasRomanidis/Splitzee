@@ -19,6 +19,7 @@ class MainActivity : ComponentActivity() {
             val greetings by mainViewModel.greetings.collectAsStateWithLifecycle()
             SplitzeeApp(
                 text = greetings,
+                onAddExpense = mainViewModel::addExpense,
                 onClick = mainViewModel::addExpense
             )
         }

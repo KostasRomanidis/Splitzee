@@ -12,7 +12,8 @@ class MainViewModel(
     private val _greetingList: MutableStateFlow<String> = MutableStateFlow("Welcome to Splitzee!")
     val greetings: StateFlow<String> = _greetingList.asStateFlow()
 
-    fun addExpense() {
-        addExpenseUC.execute(10L)
+    fun addExpense(expense: Long) {
+        println("Expense: $expense")
+        addExpenseUC.execute(expense)
     }
 }
