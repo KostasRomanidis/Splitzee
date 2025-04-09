@@ -43,6 +43,7 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.ktor.client.android)
+            implementation(libs.androidx.datastore.preferences)
         }
 
         iosMain.dependencies {
