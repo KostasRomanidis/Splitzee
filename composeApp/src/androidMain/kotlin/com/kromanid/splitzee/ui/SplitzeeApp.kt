@@ -17,6 +17,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -36,9 +37,6 @@ fun SplitzeeApp(
     onDescriptionChange: (String) -> Unit,
     onAddExpense: () -> Unit,
 ) {
-    var description by rememberSaveable { mutableStateOf("") }
-    var expense by rememberSaveable { mutableStateOf("") }
-
     MaterialTheme {
         Scaffold(
             modifier = Modifier
@@ -56,10 +54,9 @@ fun SplitzeeApp(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(bottom = 8.dp),
-                        value = description,
+                        value = uiState.description,
                         onValueChange = {
-                            onDescriptionChange.invoke(description)
-                            description = it
+                            onDescriptionChange.invoke(it)
                         },
                         label = { Text("Description") },
                         singleLine = true,
@@ -68,10 +65,9 @@ fun SplitzeeApp(
 
                     TextField(
                         modifier = Modifier.fillMaxWidth(),
-                        value = expense,
+                        value = uiState.expense.toString(),
                         onValueChange = {
-                            onAddAmount.invoke(expense)
-                            expense = it
+                            onAddAmount.invoke(it)
                         },
                         label = { Text("Expense") },
                         singleLine = true,
