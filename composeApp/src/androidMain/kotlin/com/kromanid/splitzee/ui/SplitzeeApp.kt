@@ -26,15 +26,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.kromanid.splitzee.ui.states.SplitzeeUIState
 
 
 @Composable
 fun SplitzeeApp(
-    text: String,
-    onAddExpense: (Long) -> Unit,
-    onClick: (Long) -> Unit
+    uiState: SplitzeeUIState,
+    onAddAmount: (String) -> Unit,
+    onDescriptionChange: (String) -> Unit,
+    onAddExpense: () -> Unit,
 ) {
-    var input by rememberSaveable { mutableStateOf("") }
+    var description by rememberSaveable { mutableStateOf("") }
+    var expense by rememberSaveable { mutableStateOf("") }
 
     MaterialTheme {
         Scaffold(
@@ -50,22 +53,40 @@ fun SplitzeeApp(
                     verticalArrangement = Arrangement.Center
                 ) {
                     TextField(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 8.dp),
+                        value = description,
+                        onValueChange = {
+                            onDescriptionChange.invoke(description)
+                            description = it
+                        },
+                        label = { Text("Description") },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+                        placeholder = { Text("Add expense description") })
+
+                    TextField(
                         modifier = Modifier.fillMaxWidth(),
-                        value = input,
-                        onValueChange = { input = it },
+                        value = expense,
+                        onValueChange = {
+                            onAddAmount.invoke(expense)
+                            expense = it
+                        },
                         label = { Text("Expense") },
                         singleLine = true,
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         placeholder = { Text("add expense") })
+
                     Button(
                         modifier = Modifier
                             .fillMaxWidth()
                             .wrapContentHeight(),
                         onClick = {
-                            onAddExpense.invoke(input.toLongOrNull() ?: 0L)
+                            onAddExpense.invoke()
                         }
                     ) {
-                        Text(text)
+                        Text("Add expense")
                     }
                 }
 
@@ -77,7 +98,7 @@ fun SplitzeeApp(
             ) {
                 Text(
                     modifier = Modifier.padding(paddingValues = paddings),
-                    text = text
+                    text = "Welcome to Splitzee!"
                 )
             }
         }

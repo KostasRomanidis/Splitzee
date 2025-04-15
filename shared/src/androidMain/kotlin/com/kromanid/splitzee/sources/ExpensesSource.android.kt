@@ -24,7 +24,6 @@ class ExpensesSourceImpl(
 
     private val dataStore: DataStore<Preferences> = context.dataStore
 
-
     override suspend fun save(key: String, value: Long) {
         dataStore.edit { prefs ->
             prefs[longPreferencesKey(key)] = value
@@ -33,12 +32,9 @@ class ExpensesSourceImpl(
 
     override fun get(): Flow<Map<String, Long>> {
         return dataStore.data.map { preferences ->
-            val result = mutableMapOf<String, Long>()
-
-            preferences.asMap().keys.forEach { it ->
-                result[it.name] = it as Long ?: 0L
-            }
-            result
+            preferences.asMap().mapNotNull { (key, value) ->
+                (value as? Long)?.let { key.name to it }
+            }.toMap()
         }
     }
 }

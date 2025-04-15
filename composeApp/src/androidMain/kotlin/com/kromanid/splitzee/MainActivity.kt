@@ -16,11 +16,13 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         setContent {
-            val greetings by mainViewModel.greetings.collectAsStateWithLifecycle()
+            val uiState = mainViewModel.uiState.collectAsStateWithLifecycle().value
+
             SplitzeeApp(
-                text = greetings,
+                uiState = uiState,
+                onAddAmount = mainViewModel::setAmount,
+                onDescriptionChange = mainViewModel::setDescription,
                 onAddExpense = mainViewModel::addExpense,
-                onClick = mainViewModel::addExpense
             )
         }
     }
