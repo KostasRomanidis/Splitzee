@@ -4,8 +4,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
-    kotlin("plugin.serialization") version "2.0.0"
-    id("com.google.devtools.ksp")
+    alias(libs.plugins.kotlinSerialization)
     id("com.rickclephas.kmp.nativecoroutines")
 }
 
@@ -13,7 +12,7 @@ kotlin {
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
+            jvmTarget.set(JvmTarget.JVM_17)
         }
     }
 
@@ -38,7 +37,6 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinx.json)
             // di
             api(libs.koin.core)
-            api(libs.koin.test)
         }
 
         androidMain.dependencies {

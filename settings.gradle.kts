@@ -3,15 +3,16 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
     repositories {
+        gradlePluginPortal()
+        mavenCentral()
         google {
             mavenContent {
                 includeGroupAndSubgroups("androidx")
                 includeGroupAndSubgroups("com.android")
                 includeGroupAndSubgroups("com.google")
+                includeGroupAndSubgroups("com.google.devtools.ksp")
             }
         }
-        mavenCentral()
-        gradlePluginPortal()
     }
 }
 
