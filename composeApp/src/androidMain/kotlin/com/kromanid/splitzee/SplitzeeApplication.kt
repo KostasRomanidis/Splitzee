@@ -7,11 +7,11 @@ import com.kromanid.splitzee.di.initKoin
 import org.koin.android.ext.koin.androidContext
 
 
-class App : Application() {
+class SplitzeeApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         initKoin {
-            androidContext(this@App)
+            androidContext(this@SplitzeeApplication)
             modules(androidModules, androidMain)
         }
     }
