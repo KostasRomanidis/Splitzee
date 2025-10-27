@@ -14,6 +14,7 @@
 		5CD2A9992D987438009F895F /* KMPNativeCoroutinesCombine in Frameworks */ = {isa = PBXBuildFile; productRef = 5CD2A9982D987438009F895F /* KMPNativeCoroutinesCombine */; };
 		5CD2A99B2D987438009F895F /* KMPNativeCoroutinesCore in Frameworks */ = {isa = PBXBuildFile; productRef = 5CD2A99A2D987438009F895F /* KMPNativeCoroutinesCore */; };
 		7555FF83242A565900829871 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* HomeView.swift */; };
+		A92DCAF62EAF7D3600C9CD88 /* AddExpenseSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A92DCAF52EAF7D2E00C9CD88 /* AddExpenseSheet.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +24,7 @@
 		7555FF7B242A565900829871 /* Splitzee.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Splitzee.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF82242A565900829871 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A92DCAF52EAF7D2E00C9CD88 /* AddExpenseSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddExpenseSheet.swift; sourceTree = "<group>"; };
 		AB3632DC29227652001CCB65 /* Config.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = Config.xcconfig; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -76,6 +78,7 @@
 			children = (
 				058557BA273AAA24004C7B11 /* Assets.xcassets */,
 				7555FF82242A565900829871 /* HomeView.swift */,
+				A92DCAF52EAF7D2E00C9CD88 /* AddExpenseSheet.swift */,
 				7555FF8C242A565B00829871 /* Info.plist */,
 				2152FB032600AC8F00CF470E /* iOSApp.swift */,
 				058557D7273AAEEB004C7B11 /* Preview Content */,
@@ -186,6 +189,7 @@
 			isa = PBXSourcesBuildPhase;
 			files = (
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
+				A92DCAF62EAF7D3600C9CD88 /* AddExpenseSheet.swift in Sources */,
 				7555FF83242A565900829871 /* HomeView.swift in Sources */,
 			);
 		};
