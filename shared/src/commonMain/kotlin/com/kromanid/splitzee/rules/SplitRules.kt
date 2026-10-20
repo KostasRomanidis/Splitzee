@@ -8,13 +8,16 @@ import com.kromanid.splitzee.models.SplitRule
 
 private const val FULL_BP = 10_000
 
+internal val SplitRule.participants: List<MemberId>
+    get() = when (this) {
+        is SplitRule.Equal -> participants
+        is SplitRule.Exact -> shares.map { it.first }
+        is SplitRule.Percent -> shares.map { it.first }
+    }
+
 /** Turns [rule] into per-member shares that sum exactly to [amount], or every rule violation. */
 internal fun computeShares(amount: Money, payer: MemberId, rule: SplitRule): Validated<List<ExpenseShare>> {
-    val participants = when (rule) {
-        is SplitRule.Equal -> rule.participants
-        is SplitRule.Exact -> rule.shares.map { it.first }
-        is SplitRule.Percent -> rule.shares.map { it.first }
-    }
+    val participants = rule.participants
     if (participants.isEmpty()) return Validated.Invalid(listOf(ExpenseError.NoParticipants))
 
     val errors = participants.groupingBy { it }.eachCount()
