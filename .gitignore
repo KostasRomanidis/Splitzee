@@ -55,3 +55,6 @@ build/
 
 # Local configuration file
 local.properties
+
+# AI plugins
+.rtk

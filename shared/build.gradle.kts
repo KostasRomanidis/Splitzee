@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.sqldelight)
     id("com.rickclephas.kmp.nativecoroutines")
 }
 
@@ -37,19 +38,40 @@ kotlin {
             implementation(libs.ktor.serialization.kotlinx.json)
             // di
             api(libs.koin.core)
+            implementation(libs.sqldelight.coroutines.extensions)
+        }
+
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
         }
 
         androidMain.dependencies {
             implementation(libs.ktor.client.android)
             implementation(libs.androidx.datastore.preferences)
+            implementation(libs.sqldelight.android.driver)
+        }
+
+        androidUnitTest.dependencies {
+            implementation(libs.sqldelight.sqlite.driver)
+            implementation(libs.kotlin.test.junit)
         }
 
         iosMain.dependencies {
             implementation(libs.ktor.client.darwin)
+            implementation(libs.sqldelight.native.driver)
         }
 
         all {
             languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
+            languageSettings.optIn("kotlin.uuid.ExperimentalUuidApi")
+        }
+    }
+}
+
+sqldelight {
+    databases {
+        create("SplitzeeDatabase") {
+            packageName.set("com.kromanid.splitzee.database")
         }
     }
 }

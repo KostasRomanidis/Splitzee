@@ -30,11 +30,17 @@ koinCore = "4.1.1"
 koinTest = "4.1.1"
 
 # Storage
+# shortcut: newer SQLDelight bumps the Kotlin Gradle plugin past 2.2.20 and breaks nativecoroutines; upgrade together with Kotlin
+sqldelight = "2.1.0"
 datastorePreferences = "1.1.7"
 lifecycleViewmodelKtx = "2.9.4"
 
 [libraries]
 # Storage
+sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
+sqldelight-native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
+sqldelight-coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
+sqldelight-sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 
 # Lifecycle / ViewModel
@@ -83,6 +89,7 @@ kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref =
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 ksp = { id = "com.google.devtools.ksp", version = "2.2.20-2.0.3" }
 
 nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version = "1.0.0-ALPHA-47" }
