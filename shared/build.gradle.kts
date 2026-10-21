@@ -4,9 +4,8 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
-    alias(libs.plugins.kotlinSerialization)
     alias(libs.plugins.sqldelight)
-    id("com.rickclephas.kmp.nativecoroutines")
+    alias(libs.plugins.skie)
 }
 
 kotlin {
@@ -33,9 +32,6 @@ kotlin {
             // put your Multiplatform dependencies here
             implementation(libs.kotlinx.datetime)
             implementation(libs.kotlinx.coroutines.core)
-            implementation(libs.ktor.client.core)
-            implementation(libs.ktor.client.content.negotiation)
-            implementation(libs.ktor.serialization.kotlinx.json)
             // di
             api(libs.koin.core)
             implementation(libs.sqldelight.coroutines.extensions)
@@ -46,7 +42,6 @@ kotlin {
         }
 
         androidMain.dependencies {
-            implementation(libs.ktor.client.android)
             implementation(libs.sqldelight.android.driver)
         }
 
@@ -56,7 +51,6 @@ kotlin {
         }
 
         iosMain.dependencies {
-            implementation(libs.ktor.client.darwin)
             implementation(libs.sqldelight.native.driver)
         }
 

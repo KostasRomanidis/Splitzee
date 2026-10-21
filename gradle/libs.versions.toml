@@ -25,12 +25,11 @@ junit = "4.13.2"
 # KMP libs
 kotlinxCoroutinesCore = "1.10.2"
 kotlinxDatetime = "0.7.1"
-ktorVersion = "3.3.0"
 koinCore = "4.1.1"
 koinTest = "4.1.1"
 
 # Storage
-# shortcut: newer SQLDelight bumps the Kotlin Gradle plugin past 2.2.20 and breaks nativecoroutines; upgrade together with Kotlin
+# shortcut: newer SQLDelight bumps the Kotlin Gradle plugin past 2.2.20 and breaks SKIE; upgrade together with Kotlin
 sqldelight = "2.1.0"
 lifecycleViewmodelKtx = "2.9.4"
 
@@ -70,11 +69,6 @@ kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-c
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 
 # Ktor (for future networking / P2P experiments)
-ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorVersion" }
-ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktorVersion" }
-ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktorVersion" }
-ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorVersion" }
-ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorVersion" }
 
 # Testing
 androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-junit" }
@@ -86,8 +80,7 @@ androidLibrary = { id = "com.android.library", version.ref = "agp" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-multiplatform" }
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
-kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }
 ksp = { id = "com.google.devtools.ksp", version = "2.2.20-2.0.3" }
 
-nativecoroutines = { id = "com.rickclephas.kmp.nativecoroutines", version = "1.0.0-ALPHA-47" }
+skie = { id = "co.touchlab.skie", version = "0.10.8" }

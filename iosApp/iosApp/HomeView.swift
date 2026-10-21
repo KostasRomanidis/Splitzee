@@ -1,7 +1,5 @@
 import SwiftUI
 import Shared
-import KMPNativeCoroutinesAsync
-import KMPNativeCoroutinesCore
 
 struct ExpenseUI: Identifiable, Equatable {
     let id: String
