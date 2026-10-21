@@ -47,7 +47,6 @@ kotlin {
 
         androidMain.dependencies {
             implementation(libs.ktor.client.android)
-            implementation(libs.androidx.datastore.preferences)
             implementation(libs.sqldelight.android.driver)
         }
 
