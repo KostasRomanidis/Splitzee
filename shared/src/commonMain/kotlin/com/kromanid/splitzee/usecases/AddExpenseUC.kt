@@ -8,7 +8,6 @@ interface AddExpenseUC {
 
 internal class AddExpenseUCImpl(private val repo: ExpensesRepo) : AddExpenseUC {
     override suspend fun execute(description: String, expense: Long) {
-        println("Expense added: $description : $expense")
-        repo.addExpense(description = description, amount = expense)
+        TODO("replaced in task 4.1")
     }
 }

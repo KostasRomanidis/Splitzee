@@ -9,6 +9,6 @@ interface GetExpensesUC {
 
 internal class GetExpensesUCImpl(private val repo: ExpensesRepo) : GetExpensesUC {
     override fun getExpenses(): Flow<Map<String, Long>> {
-        return repo.getExpenses()
+        TODO("replaced in task 4.1")
     }
 }

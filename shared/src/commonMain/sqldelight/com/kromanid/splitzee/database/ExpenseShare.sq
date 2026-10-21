@@ -1,0 +1,16 @@
+CREATE TABLE expense_share (
+    id TEXT NOT NULL PRIMARY KEY,
+    expense_id TEXT NOT NULL REFERENCES expense(id),
+    member_id TEXT NOT NULL REFERENCES member(id),
+    amount_minor INTEGER NOT NULL,
+    -- only for PERCENT splits; percentages cannot be recovered from rounded amounts
+    percent_bp INTEGER,
+    position INTEGER NOT NULL,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL,
+    deleted_at INTEGER
+);
+
+insert:
+INSERT INTO expense_share(id, expense_id, member_id, amount_minor, percent_bp, position, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?);

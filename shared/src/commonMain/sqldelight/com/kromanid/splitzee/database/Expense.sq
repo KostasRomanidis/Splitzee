@@ -1,0 +1,40 @@
+CREATE TABLE expense (
+    id TEXT NOT NULL PRIMARY KEY,
+    household_id TEXT NOT NULL REFERENCES household(id),
+    description TEXT NOT NULL,
+    amount_minor INTEGER NOT NULL,
+    -- FIXED (value = FixedCategory name) or CUSTOM (value = trimmed name)
+    category_kind TEXT NOT NULL,
+    category_value TEXT NOT NULL,
+    -- ISO 'YYYY-MM-DD', so period filters are lexical range queries
+    date TEXT NOT NULL,
+    paid_by TEXT NOT NULL REFERENCES member(id),
+    -- EQUAL, EXACT or PERCENT: what the user entered
+    split_type TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL,
+    deleted_at INTEGER
+);
+
+CREATE INDEX expense_household_date ON expense(household_id, date);
+
+insert:
+INSERT INTO expense(id, household_id, description, amount_minor, category_kind, category_value, date, paid_by, split_type, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+selectWithShares:
+SELECT e.id, e.description, e.amount_minor, e.category_kind, e.category_value, e.date, e.paid_by, e.split_type,
+       s.member_id, s.amount_minor AS share_minor, s.percent_bp
+FROM expense e
+JOIN expense_share s ON s.expense_id = e.id AND s.deleted_at IS NULL
+WHERE e.household_id = :householdId AND e.deleted_at IS NULL
+ORDER BY e.date DESC, e.created_at DESC, e.id, s.position;
+
+selectInRangeWithShares:
+SELECT e.id, e.description, e.amount_minor, e.category_kind, e.category_value, e.date, e.paid_by, e.split_type,
+       s.member_id, s.amount_minor AS share_minor, s.percent_bp
+FROM expense e
+JOIN expense_share s ON s.expense_id = e.id AND s.deleted_at IS NULL
+WHERE e.household_id = :householdId AND e.deleted_at IS NULL
+  AND e.date >= :start AND e.date < :end
+ORDER BY e.date DESC, e.created_at DESC, e.id, s.position;

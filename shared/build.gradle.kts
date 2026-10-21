@@ -64,6 +64,7 @@ kotlin {
         all {
             languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
             languageSettings.optIn("kotlin.uuid.ExperimentalUuidApi")
+            languageSettings.optIn("kotlin.time.ExperimentalTime")
         }
     }
 }

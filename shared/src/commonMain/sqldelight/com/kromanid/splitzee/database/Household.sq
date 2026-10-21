@@ -1,0 +1,18 @@
+CREATE TABLE household (
+    id TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    currency TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL,
+    deleted_at INTEGER
+);
+
+insert:
+INSERT INTO household(id, name, currency, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?);
+
+selectCurrent:
+SELECT id, name, currency FROM household
+WHERE deleted_at IS NULL
+ORDER BY created_at
+LIMIT 1;

@@ -1,0 +1,17 @@
+CREATE TABLE member (
+    id TEXT NOT NULL PRIMARY KEY,
+    household_id TEXT NOT NULL REFERENCES household(id),
+    name TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    updated_at INTEGER NOT NULL,
+    deleted_at INTEGER
+);
+
+insert:
+INSERT INTO member(id, household_id, name, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?);
+
+selectByHousehold:
+SELECT id, name FROM member
+WHERE household_id = ? AND deleted_at IS NULL
+ORDER BY created_at, rowid;
