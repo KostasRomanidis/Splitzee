@@ -85,7 +85,7 @@ class HomeViewModel: ObservableObject {
     
     func addExpense() {
         print("inpt: \(input)")
-        //        addExpenseUC.execute(expense: 10, description: "")
+        // shortcut: add-expense UI lands in the add-expense change
     }
 }
 

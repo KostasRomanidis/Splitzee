@@ -2,20 +2,28 @@ package com.kromanid.splitzee
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.kromanid.splitzee.models.Category
+import com.kromanid.splitzee.models.FixedCategory
+import com.kromanid.splitzee.models.Money
+import com.kromanid.splitzee.models.SplitRule
 import com.kromanid.splitzee.ui.states.SplitzeeUIState
+import com.kromanid.splitzee.usecases.AddExpenseResult
 import com.kromanid.splitzee.usecases.AddExpenseUC
 import com.kromanid.splitzee.usecases.GetExpensesUC
+import com.kromanid.splitzee.usecases.GetMembersUC
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 class MainViewModel(
     private val addExpenseUC: AddExpenseUC,
-    private val getExpensesUC: GetExpensesUC
+    private val getExpensesUC: GetExpensesUC,
+    private val getMembersUC: GetMembersUC,
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<SplitzeeUIState> =
@@ -24,7 +32,7 @@ class MainViewModel(
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
-            getExpensesUC.getExpenses().collectLatest { expenses ->
+            getExpensesUC.execute().collectLatest { expenses ->
                 println("Get Expenses: $expenses")
             }
         }
@@ -44,8 +52,15 @@ class MainViewModel(
 
     fun addExpense() {
         viewModelScope.launch(Dispatchers.IO) {
-            println("Expense: ${_uiState.value.description} = ${_uiState.value.expense}")
-            addExpenseUC.execute(_uiState.value.description, _uiState.value.expense)
+            val members = getMembersUC.execute().first().map { it.id }
+            val result = addExpenseUC.execute(
+                description = _uiState.value.description,
+                amount = Money(_uiState.value.expense),
+                category = Category.Fixed(FixedCategory.Other),
+                paidBy = members.first(),
+                split = SplitRule.Equal(members),
+            )
+            if (result is AddExpenseResult.Invalid) println("Invalid expense: ${result.errors}")
         }
     }
 }

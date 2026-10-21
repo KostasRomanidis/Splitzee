@@ -1,3 +1,4 @@
 TEAM_ID=
 BUNDLE_ID=com.kromanid.splitzee.Splitzee
 APP_NAME=Splitzee
+OTHER_LDFLAGS=$(inherited) -lsqlite3

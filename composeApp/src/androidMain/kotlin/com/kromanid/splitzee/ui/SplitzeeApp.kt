@@ -8,9 +8,9 @@ import com.kromanid.splitzee.ui.states.HomeUiState
 
 
 @Composable
-fun SplitzeeApp() {
+fun SplitzeeApp(onAddExpense: () -> Unit = {}) {
     MaterialTheme {
-        HomeScreen(uiState = HomeUiState.Empty) { }
+        HomeScreen(uiState = HomeUiState.Empty, addExpense = onAddExpense)
     }
 }
 

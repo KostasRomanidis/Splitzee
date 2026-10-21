@@ -8,7 +8,8 @@ val androidModules = module {
     viewModel {
         MainViewModel(
             addExpenseUC = get(),
-            getExpensesUC = get()
+            getExpensesUC = get(),
+            getMembersUC = get(),
         )
     }
 }

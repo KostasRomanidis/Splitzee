@@ -13,8 +13,16 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        val viewModel = mainViewModel // created eagerly so the expenses flow logs at launch
         setContent {
-            SplitzeeApp()
+            SplitzeeApp(
+                // shortcut: fixed test expense, the add-expense change brings the input UI
+                onAddExpense = {
+                    viewModel.setDescription("Test expense")
+                    viewModel.setAmount("1000")
+                    viewModel.addExpense()
+                }
+            )
         }
     }
 }

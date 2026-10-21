@@ -1,7 +1,6 @@
 package com.kromanid.splitzee
 
 import android.app.Application
-import com.kromanid.splitzee.di.androidMain
 import com.kromanid.splitzee.di.androidModules
 import com.kromanid.splitzee.di.initKoin
 import org.koin.android.ext.koin.androidContext
@@ -12,7 +11,7 @@ class SplitzeeApplication : Application() {
         super.onCreate()
         initKoin {
             androidContext(this@SplitzeeApplication)
-            modules(androidModules, androidMain)
+            modules(androidModules)
         }
     }
 }
