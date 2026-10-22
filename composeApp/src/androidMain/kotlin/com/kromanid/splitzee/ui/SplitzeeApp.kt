@@ -14,6 +14,9 @@ fun SplitzeeApp(
     onAddExpense: () -> Unit = {},
     onNameChange: () -> Unit = {},
     onCreateHousehold: (String) -> Unit = {},
+    onSelectHousehold: (String) -> Unit = {},
+    onNewHousehold: () -> Unit = {},
+    onCancelCreate: () -> Unit = {},
 ) {
     MaterialTheme {
         HomeScreen(
@@ -21,6 +24,9 @@ fun SplitzeeApp(
             addExpense = onAddExpense,
             onNameChange = onNameChange,
             onCreateHousehold = onCreateHousehold,
+            onSelectHousehold = onSelectHousehold,
+            onNewHousehold = onNewHousehold,
+            onCancelCreate = onCancelCreate,
         )
     }
 }

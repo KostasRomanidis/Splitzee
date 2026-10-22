@@ -28,6 +28,9 @@ class MainActivity : ComponentActivity() {
                 },
                 onNameChange = viewModel::clearNameError,
                 onCreateHousehold = viewModel::createHousehold,
+                onSelectHousehold = viewModel::selectHousehold,
+                onNewHousehold = viewModel::openCreateHousehold,
+                onCancelCreate = viewModel::closeCreateHousehold,
             )
         }
     }

@@ -8,7 +8,7 @@
 ## 2. Android UI
 
 - [x] 2.1 Add a create-household composable (name field, create button, error text) and show it full screen from `HomeScreen` for `NoHousehold`, with the add-expense FAB hidden. Collect the viewmodel state in `MainActivity`/`SplitzeeApp` instead of the hardcoded `Empty`. Verify on an emulator with a fresh install: the form shows, a blank name shows the error, and "Home" leads to the home screen titled "Home"
-- [ ] 2.2 Make the top bar title open a `DropdownMenu` listing households with a check on the selected one, a divider and "New household", which opens the form in a dialog with Cancel. Verify on an emulator the "Household menu" and "Create another household" scenarios in `specs/household-ui/spec.md`, including that the selection survives an app restart
+- [x] 2.2 Make the top bar title open a `DropdownMenu` listing households with a check on the selected one, a divider and "New household", which opens the form in a dialog with Cancel. Verify on an emulator the "Household menu" and "Create another household" scenarios in `specs/household-ui/spec.md`, including that the selection survives an app restart
 
 ## 3. iOS viewmodel
 
