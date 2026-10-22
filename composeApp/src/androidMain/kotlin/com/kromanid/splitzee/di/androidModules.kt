@@ -14,6 +14,7 @@ val androidModules = module {
             getHouseholdsUC = get(),
             getCurrentHouseholdUC = get(),
             selectHouseholdUC = get(),
+            deleteHouseholdUC = get(),
         )
     }
 }

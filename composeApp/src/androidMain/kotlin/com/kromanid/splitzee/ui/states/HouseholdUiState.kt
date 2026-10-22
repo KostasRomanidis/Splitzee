@@ -9,4 +9,5 @@ data class HouseholdUiState(
     val selected: Household? = null,
     val showCreateDialog: Boolean = false,
     val nameError: HouseholdError? = null,
+    val showDeleteDialog: Boolean = false,
 )

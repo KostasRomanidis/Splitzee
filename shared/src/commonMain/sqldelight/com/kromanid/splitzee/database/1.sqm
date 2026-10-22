@@ -1,0 +1,9 @@
+CREATE TABLE local_user (
+    id TEXT NOT NULL PRIMARY KEY
+);
+
+INSERT INTO local_user(id) VALUES (lower(hex(randomblob(16))));
+
+ALTER TABLE household ADD COLUMN created_by TEXT NOT NULL DEFAULT '';
+
+UPDATE household SET created_by = (SELECT id FROM local_user);

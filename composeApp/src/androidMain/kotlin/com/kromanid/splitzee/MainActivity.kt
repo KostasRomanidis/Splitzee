@@ -31,6 +31,9 @@ class MainActivity : ComponentActivity() {
                 onSelectHousehold = viewModel::selectHousehold,
                 onNewHousehold = viewModel::openCreateHousehold,
                 onCancelCreate = viewModel::closeCreateHousehold,
+                onDeleteHousehold = viewModel::openDeleteHousehold,
+                onConfirmDelete = viewModel::deleteHousehold,
+                onCancelDelete = viewModel::closeDeleteHousehold,
             )
         }
     }

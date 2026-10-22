@@ -5,21 +5,22 @@ CREATE TABLE household (
     created_at INTEGER NOT NULL,
     updated_at INTEGER NOT NULL,
     selected_at INTEGER NOT NULL,
-    deleted_at INTEGER
+    deleted_at INTEGER,
+    created_by TEXT NOT NULL DEFAULT ''
 );
 
 insert:
-INSERT INTO household(id, name, currency, created_at, updated_at, selected_at)
-VALUES (?, ?, ?, ?, ?, ?);
+INSERT INTO household(id, name, currency, created_at, updated_at, selected_at, created_by)
+VALUES (?, ?, ?, ?, ?, ?, (SELECT id FROM local_user));
 
 selectCurrent:
-SELECT id, name, currency FROM household
+SELECT id, name, currency, created_by = (SELECT id FROM local_user) AS is_creator FROM household
 WHERE deleted_at IS NULL
 ORDER BY selected_at DESC
 LIMIT 1;
 
 selectAll:
-SELECT id, name, currency FROM household
+SELECT id, name, currency, created_by = (SELECT id FROM local_user) AS is_creator FROM household
 WHERE deleted_at IS NULL
 ORDER BY created_at, rowid;
 
@@ -29,4 +30,4 @@ WHERE id = :id AND deleted_at IS NULL;
 
 softDelete:
 UPDATE household SET deleted_at = :now, updated_at = :now
-WHERE id = :id AND deleted_at IS NULL;
+WHERE id = :id AND deleted_at IS NULL AND created_by = (SELECT id FROM local_user);

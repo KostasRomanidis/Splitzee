@@ -14,6 +14,7 @@ import com.kromanid.splitzee.usecases.AddExpenseResult
 import com.kromanid.splitzee.usecases.AddExpenseUC
 import com.kromanid.splitzee.usecases.CreateHouseholdResult
 import com.kromanid.splitzee.usecases.CreateHouseholdUC
+import com.kromanid.splitzee.usecases.DeleteHouseholdUC
 import com.kromanid.splitzee.usecases.GetCurrentHouseholdUC
 import com.kromanid.splitzee.usecases.GetExpensesUC
 import com.kromanid.splitzee.usecases.GetHouseholdsUC
@@ -39,6 +40,7 @@ class MainViewModel(
     private val getHouseholdsUC: GetHouseholdsUC,
     private val getCurrentHouseholdUC: GetCurrentHouseholdUC,
     private val selectHouseholdUC: SelectHouseholdUC,
+    private val deleteHouseholdUC: DeleteHouseholdUC,
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<SplitzeeUIState> =
@@ -47,19 +49,22 @@ class MainViewModel(
 
     private val showCreateDialog = MutableStateFlow(false)
     private val nameError = MutableStateFlow<HouseholdError?>(null)
+    private val showDeleteDialog = MutableStateFlow(false)
 
     val householdState: StateFlow<HouseholdUiState> = combine(
         getCurrentHouseholdUC.execute(),
         getHouseholdsUC.execute(),
         showCreateDialog,
         nameError,
-    ) { current, households, showDialog, error ->
+        showDeleteDialog,
+    ) { current, households, showDialog, error, showDelete ->
         HouseholdUiState(
             home = if (current == null) HomeUiState.NoHousehold else HomeUiState.Empty,
             households = households,
             selected = current,
             showCreateDialog = showDialog,
             nameError = error,
+            showDeleteDialog = showDelete,
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), HouseholdUiState())
 
@@ -125,5 +130,22 @@ class MainViewModel(
 
     fun selectHousehold(id: String) {
         viewModelScope.launch { selectHouseholdUC.execute(id) }
+    }
+
+    fun openDeleteHousehold() {
+        showDeleteDialog.value = true
+    }
+
+    fun closeDeleteHousehold() {
+        showDeleteDialog.value = false
+    }
+
+    /** Deletes the selected household; the repo selects the next one, so householdState follows on its own. */
+    fun deleteHousehold() {
+        val selected = householdState.value.selected ?: return closeDeleteHousehold()
+        viewModelScope.launch {
+            deleteHouseholdUC.execute(selected.id)
+            closeDeleteHousehold()
+        }
     }
 }
