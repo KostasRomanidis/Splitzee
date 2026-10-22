@@ -60,6 +60,7 @@ fun HomeScreen(
     ) { paddingValues ->
         when (uiState) {
             HomeUiState.Loading -> LoadingHomeScreen(modifier = Modifier.padding(paddingValues))
+            HomeUiState.NoHousehold -> {}
             HomeUiState.Empty -> EmptyHomeScreen(modifier = Modifier.padding(paddingValues))
             is HomeUiState.Expenses -> ExpensesHomeScreen(
                 modifier = Modifier.padding(paddingValues),
