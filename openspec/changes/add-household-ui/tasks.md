@@ -12,7 +12,8 @@
 
 ## 3. iOS viewmodel
 
-- [ ] 3.1 Check the SKIE-generated Swift API for `CreateHouseholdUC.execute`, `CreateHouseholdResult` and the two household flows (Xcode jump-to-definition on `Shared`), and note any naming difference from `design.md` in this task. Verify `./gradlew :shared:compileKotlinIosSimulatorArm64` succeeds
+- [x] 3.1 Check the SKIE-generated Swift API for `CreateHouseholdUC.execute`, `CreateHouseholdResult` and the two household flows (Xcode jump-to-definition on `Shared`), and note any naming difference from `design.md` in this task. Verify `./gradlew :shared:compileKotlinIosSimulatorArm64` succeeds
+  - Finding: the `Household` model is `Household_` in Swift; `Household` is the SQLDelight table class. `CreateHouseholdUC.execute(name:)` and `SelectHouseholdUC.execute(id:)` are `async throws`; switch on the result with `onEnum(of:)`. `GetHouseholdsUC.execute()` is a flow of `[Household_]` and `GetCurrentHouseholdUC.execute()` an optional flow of `Household_`, both iterable with `for await`.
 - [ ] 3.2 Make `HomeViewModel` `@MainActor`, take the four use cases from `UseCaseHelper`, publish `state` (adding `.noHousehold` to `HomeUiState`), `households`, `current` and `nameError`, and add `observe()` (iterates both flows), `createHousehold(name:)` and `selectHousehold(id:)`. Remove the unused `input`/`greetings`. Verify the iOS app builds in Xcode
 
 ## 4. iOS UI
