@@ -1,0 +1,6 @@
+-- The user on this device until accounts exist; one row, created with the schema.
+CREATE TABLE local_user (
+    id TEXT NOT NULL PRIMARY KEY
+);
+
+INSERT INTO local_user(id) VALUES (lower(hex(randomblob(16))));

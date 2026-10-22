@@ -14,7 +14,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
@@ -29,6 +31,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -59,8 +62,25 @@ fun HomeScreen(
     onSelectHousehold: (String) -> Unit,
     onNewHousehold: () -> Unit,
     onCancelCreate: () -> Unit,
+    onDeleteHousehold: () -> Unit,
+    onConfirmDelete: () -> Unit,
+    onCancelDelete: () -> Unit,
 ) {
     val uiState = state.home
+    val selected = state.selected
+    if (state.showDeleteDialog && selected != null) {
+        AlertDialog(
+            onDismissRequest = onCancelDelete,
+            title = { Text("Delete ${selected.name}?") },
+            text = { Text("Its members and expenses will be removed.") },
+            confirmButton = {
+                TextButton(onClick = onConfirmDelete) {
+                    Text("Delete", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = { TextButton(onClick = onCancelDelete) { Text("Cancel") } },
+        )
+    }
     if (state.showCreateDialog) {
         Dialog(onDismissRequest = onCancelCreate) {
             Surface(shape = MaterialTheme.shapes.extraLarge) {
@@ -79,7 +99,6 @@ fun HomeScreen(
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
-                    val selected = state.selected
                     if (selected == null) {
                         Text("Splitzee")
                     } else {
@@ -88,6 +107,7 @@ fun HomeScreen(
                             households = state.households,
                             onSelect = onSelectHousehold,
                             onNewHousehold = onNewHousehold,
+                            onDelete = onDeleteHousehold,
                         )
                     }
                 }
@@ -131,6 +151,7 @@ private fun HouseholdMenu(
     households: List<Household>,
     onSelect: (String) -> Unit,
     onNewHousehold: () -> Unit,
+    onDelete: () -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
     Box {
@@ -165,6 +186,17 @@ private fun HouseholdMenu(
                     onNewHousehold()
                 },
             )
+            if (selected.isCreator) {
+                val error = MaterialTheme.colorScheme.error
+                DropdownMenuItem(
+                    text = { Text("Delete household", color = error) },
+                    leadingIcon = { Icon(Icons.Default.Delete, contentDescription = null, tint = error) },
+                    onClick = {
+                        expanded = false
+                        onDelete()
+                    },
+                )
+            }
         }
     }
 }
@@ -227,5 +259,8 @@ private fun HomeScreenPreview() {
         onSelectHousehold = {},
         onNewHousehold = {},
         onCancelCreate = {},
+        onDeleteHousehold = {},
+        onConfirmDelete = {},
+        onCancelDelete = {},
     )
 }

@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.update
 import kotlin.time.Clock
 import kotlin.time.Instant
 
-internal val home = Household("home", "Home", "EUR")
+internal val home = Household("home", "Home", "EUR", isCreator = true)
 
 /** Starts with [home] selected, holding [members]; the "me" member and created households' "Me" are owners. */
 internal class FakeHouseholdRepo(vararg members: Member = arrayOf(Member("me", "Me"))) : HouseholdRepo {
@@ -33,7 +33,7 @@ internal class FakeHouseholdRepo(vararg members: Member = arrayOf(Member("me", "
     override fun observeHouseholds(): Flow<List<Household>> = households
 
     override suspend fun createHousehold(name: String): Household {
-        val household = Household("h${households.value.size}", name, "EUR")
+        val household = Household("h${households.value.size}", name, "EUR", isCreator = true)
         val owner = Member("${household.id}-me", "Me")
         owners += owner.id
         households.update { it + household }
@@ -47,9 +47,11 @@ internal class FakeHouseholdRepo(vararg members: Member = arrayOf(Member("me", "
     }
 
     // shortcut: falls back to the last created survivor, not the most recently selected; the real repo is tested for that.
-    override suspend fun deleteHousehold(id: String) {
+    override suspend fun deleteHousehold(id: String): Boolean {
+        if (households.value.find { it.id == id }?.isCreator != true) return false
         households.update { all -> all.filter { it.id != id } }
         if (selected.value?.id == id) selected.value = households.value.lastOrNull()
+        return true
     }
 
     override suspend fun addMember(householdId: String, name: String): Member {

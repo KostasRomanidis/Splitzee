@@ -66,6 +66,8 @@ sqldelight {
     databases {
         create("SplitzeeDatabase") {
             packageName.set("com.kromanid.splitzee.database")
+            schemaOutputDirectory.set(file("src/commonMain/sqldelight/databases"))
+            verifyMigrations.set(true)
         }
     }
 }

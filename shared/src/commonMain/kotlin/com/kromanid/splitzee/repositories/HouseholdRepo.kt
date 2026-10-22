@@ -22,7 +22,8 @@ interface HouseholdRepo {
     /** Creates a household with an owner "Me" member and selects it. */
     suspend fun createHousehold(name: String): Household
     suspend fun selectHousehold(id: String)
-    suspend fun deleteHousehold(id: String)
+    /** Soft-deletes the household; false when the local user did not create it. */
+    suspend fun deleteHousehold(id: String): Boolean
 
     suspend fun addMember(householdId: String, name: String): Member
 
@@ -47,7 +48,7 @@ internal class HouseholdRepoImpl(private val db: SplitzeeDatabase, private val c
 
     override suspend fun createHousehold(name: String): Household = withContext(Dispatchers.IO) {
         val now = now()
-        val household = Household(Uuid.random().toString(), name, currency = "EUR")
+        val household = Household(Uuid.random().toString(), name, currency = "EUR", isCreator = true)
         db.transaction {
             db.householdQueries.insert(household.id, household.name, household.currency, now, now, now)
             db.memberQueries.insert(Uuid.random().toString(), household.id, "Me", 1, now, now)
@@ -60,9 +61,8 @@ internal class HouseholdRepoImpl(private val db: SplitzeeDatabase, private val c
         Unit
     }
 
-    override suspend fun deleteHousehold(id: String) = withContext(Dispatchers.IO) {
-        db.householdQueries.softDelete(now(), id)
-        Unit
+    override suspend fun deleteHousehold(id: String): Boolean = withContext(Dispatchers.IO) {
+        db.householdQueries.softDelete(now(), id).value > 0
     }
 
     override suspend fun addMember(householdId: String, name: String): Member = withContext(Dispatchers.IO) {

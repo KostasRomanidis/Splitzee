@@ -17,6 +17,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNull
 import kotlin.time.Instant
@@ -203,5 +204,17 @@ class UseCasesTest {
         DeleteHouseholdUCImpl(householdRepo).execute(home.id)
 
         assertEquals(beach, householdRepo.selected.value)
+    }
+
+    @Test
+    fun deleteHouseholdOfAnotherUserIsRefused() = runBlocking {
+        val shared = home.copy(isCreator = false)
+        householdRepo.households.value = listOf(shared)
+        householdRepo.selected.value = shared
+
+        assertFalse(DeleteHouseholdUCImpl(householdRepo).execute(shared.id))
+
+        assertEquals(listOf(shared), householdRepo.households.value)
+        assertEquals(shared, householdRepo.selected.value)
     }
 }

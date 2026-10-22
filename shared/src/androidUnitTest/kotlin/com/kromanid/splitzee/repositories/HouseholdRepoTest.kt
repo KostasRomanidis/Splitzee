@@ -84,6 +84,30 @@ class HouseholdRepoTest {
     }
 
     @Test
+    fun newHouseholdIsCreatedByLocalUser() = runBlocking {
+        val household = repo.createHousehold("Home")
+
+        assertTrue(household.isCreator)
+        assertEquals(household, repo.current())
+        // A second repo on the same database still sees the one local user as creator.
+        assertEquals(listOf(household), HouseholdRepoImpl(SplitzeeDatabase(driver), TickingClock()).observeHouseholds().first())
+        assertEquals(1L, driver.count("local_user"))
+    }
+
+    @Test
+    fun householdCreatedByAnotherUserCannotBeDeleted() = runBlocking {
+        val home = repo.createHousehold("Home")
+        val shared = repo.createHousehold("Shared flat")
+        driver.execute(null, "UPDATE household SET created_by = 'someone-else' WHERE id = '${shared.id}'", 0)
+        val sharedAsSeen = shared.copy(isCreator = false)
+
+        assertFalse(repo.deleteHousehold(shared.id))
+
+        assertEquals(sharedAsSeen, repo.current())
+        assertEquals(listOf(home, sharedAsSeen), repo.observeHouseholds().first())
+    }
+
+    @Test
     fun sameNameMembersGetDistinctIds() = runBlocking {
         val household = repo.createHousehold("Home")
         val a = repo.addMember(household.id, "Ana")

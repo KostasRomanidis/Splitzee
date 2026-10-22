@@ -57,6 +57,16 @@ struct HomeView: View {
                     }
                 }
             }
+            .confirmationDialog(
+                "Delete \(viewModel.current?.name ?? "household")?",
+                isPresented: $viewModel.showDeleteConfirmation,
+                titleVisibility: .visible
+            ) {
+                Button("Delete", role: .destructive) { Task { await viewModel.deleteHousehold() } }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("Its members and expenses will be removed.")
+            }
     }
 
     private func householdMenu(current: Household_) -> some View {
@@ -74,6 +84,13 @@ struct HomeView: View {
                 viewModel.showCreateSheet = true
             } label: {
                 Label("New household", systemImage: "plus")
+            }
+            if current.isCreator {
+                Button(role: .destructive) {
+                    viewModel.showDeleteConfirmation = true
+                } label: {
+                    Label("Delete household", systemImage: "trash")
+                }
             }
         } label: {
             HStack(spacing: 4) {
@@ -144,12 +161,14 @@ class HomeViewModel: ObservableObject {
     private let getHouseholdsUC: GetHouseholdsUC
     private let getCurrentHouseholdUC: GetCurrentHouseholdUC
     private let selectHouseholdUC: SelectHouseholdUC
+    private let deleteHouseholdUC: DeleteHouseholdUC
 
     @Published private(set) var state: HomeUiState = .loading
     @Published private(set) var households: [Household_] = []
     @Published private(set) var current: Household_? = nil
     @Published var nameError: String? = nil
     @Published var showCreateSheet = false
+    @Published var showDeleteConfirmation = false
 
     init(helper: UseCaseHelper = UseCaseHelper()) {
         addExpenseUC = helper.getAddExpenseUC()
@@ -157,6 +176,7 @@ class HomeViewModel: ObservableObject {
         getHouseholdsUC = helper.getHouseholdsUC()
         getCurrentHouseholdUC = helper.getCurrentHouseholdUC()
         selectHouseholdUC = helper.getSelectHouseholdUC()
+        deleteHouseholdUC = helper.getDeleteHouseholdUC()
     }
 
     /// Collects the household flows until the calling task is cancelled.
@@ -204,6 +224,16 @@ class HomeViewModel: ObservableObject {
             try await selectHouseholdUC.execute(id: id)
         } catch {
             print("Select household failed: \(error)")
+        }
+    }
+
+    /// Deletes the selected household; the repo selects the next one and the flows update the screen.
+    func deleteHousehold() async {
+        guard let current else { return }
+        do {
+            _ = try await deleteHouseholdUC.execute(id: current.id)
+        } catch {
+            print("Delete household failed: \(error)")
         }
     }
 
