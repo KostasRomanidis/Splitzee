@@ -4,6 +4,7 @@ import com.kromanid.splitzee.models.Category
 import com.kromanid.splitzee.models.ExpenseError
 import com.kromanid.splitzee.models.ExpenseShare
 import com.kromanid.splitzee.models.FixedCategory
+import com.kromanid.splitzee.models.HouseholdError
 import com.kromanid.splitzee.models.Member
 import com.kromanid.splitzee.models.MemberError
 import com.kromanid.splitzee.models.Money
@@ -17,6 +18,7 @@ import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertIs
+import kotlin.test.assertNull
 import kotlin.time.Instant
 
 class UseCasesTest {
@@ -84,7 +86,7 @@ class UseCasesTest {
     @Test
     fun blankMemberNameStoresNothing() = runBlocking {
         assertEquals(AddMemberResult.Invalid(MemberError.BlankName), AddMemberUCImpl(householdRepo).execute("   "))
-        assertEquals(2, householdRepo.members.value.size)
+        assertEquals(2, householdRepo.members.value.getValue("home").size)
     }
 
     @Test
@@ -107,5 +109,99 @@ class UseCasesTest {
         addGroceries()
         assertEquals(Money(4500), totals.receive())
         observer.cancel()
+    }
+
+    @Test
+    fun observersFollowHouseholdSwitch() = runBlocking {
+        addGroceries()
+        val names = Channel<List<String>>(Channel.UNLIMITED)
+        val expenseCounts = Channel<Int>(Channel.UNLIMITED)
+        val observers = listOf(
+            launch { GetMembersUCImpl(householdRepo).execute().collect { names.send(it.map { m -> m.name }) } },
+            launch { GetExpensesUCImpl(householdRepo, expensesRepo).execute().collect { expenseCounts.send(it.size) } },
+        )
+        assertEquals(listOf("Ana", "Ben"), names.receive())
+        assertEquals(1, expenseCounts.receive())
+
+        householdRepo.createHousehold("Beach house")
+        assertEquals(listOf("Me"), names.receive())
+        assertEquals(0, expenseCounts.receive())
+
+        householdRepo.selectHousehold("home")
+        assertEquals(listOf("Ana", "Ben"), names.receive())
+        assertEquals(1, expenseCounts.receive())
+        observers.forEach { it.cancel() }
+    }
+
+    @Test
+    fun noHouseholdGivesEmptyData() = runBlocking {
+        addGroceries()
+        householdRepo.selected.value = null
+
+        assertEquals(emptyList(), GetMembersUCImpl(householdRepo).execute().first())
+        assertEquals(emptyList(), GetExpensesUCImpl(householdRepo, expensesRepo).execute().first())
+        val summary = GetSummaryUCImpl(householdRepo, expensesRepo).execute(Period.AllTime).first()
+        assertEquals(Money(0), summary.total)
+        assertEquals(emptyList(), summary.members)
+        assertNull(GetCurrentHouseholdUCImpl(householdRepo).execute().first())
+    }
+
+    @Test
+    fun addWithoutHouseholdStoresNothing() = runBlocking {
+        householdRepo.selected.value = null
+
+        assertEquals(AddMemberResult.NoHousehold, AddMemberUCImpl(householdRepo).execute("Cleo"))
+        assertEquals(AddExpenseResult.NoHousehold, addGroceries())
+        assertEquals(RemoveMemberResult.NoHousehold, RemoveMemberUCImpl(householdRepo).execute("ana"))
+        assertEquals(2, householdRepo.members.value.getValue("home").size)
+        assertEquals(emptyList(), expensesRepo.expenses.value)
+    }
+
+    @Test
+    fun createHouseholdTrimsNameAndSelectsIt() = runBlocking {
+        val result = assertIs<CreateHouseholdResult.Success>(CreateHouseholdUCImpl(householdRepo).execute("  Beach house "))
+
+        assertEquals("Beach house", result.household.name)
+        assertEquals("EUR", result.household.currency)
+        assertEquals(result.household, GetCurrentHouseholdUCImpl(householdRepo).execute().first())
+        assertEquals(listOf("Home", "Beach house"), GetHouseholdsUCImpl(householdRepo).execute().first().map { it.name })
+    }
+
+    @Test
+    fun blankHouseholdNameStoresNothing() = runBlocking {
+        assertEquals(CreateHouseholdResult.Invalid(HouseholdError.BlankName), CreateHouseholdUCImpl(householdRepo).execute("  "))
+        assertEquals(listOf(home), householdRepo.households.value)
+        assertEquals(home, householdRepo.selected.value)
+    }
+
+    @Test
+    fun removedMemberLeavesListButStaysInSummary() = runBlocking {
+        addGroceries()
+
+        assertEquals(RemoveMemberResult.Removed, RemoveMemberUCImpl(householdRepo).execute("ana"))
+
+        assertEquals(listOf("Ben"), GetMembersUCImpl(householdRepo).execute().first().map { it.name })
+        val summary = GetSummaryUCImpl(householdRepo, expensesRepo).execute(Period.AllTime).first()
+        assertEquals(listOf("Ben" to Money(-2250), "Ana" to Money(2250)), summary.members.map { it.member.name to it.balance })
+        assertEquals(AddExpenseResult.Invalid(listOf(ExpenseError.UnknownMember("ana"))), addGroceries())
+    }
+
+    @Test
+    fun ownerCannotBeRemoved() = runBlocking {
+        val flat = assertIs<CreateHouseholdResult.Success>(CreateHouseholdUCImpl(householdRepo).execute("Flat")).household
+        val me = GetMembersUCImpl(householdRepo).execute().first().single()
+
+        assertEquals(RemoveMemberResult.CannotRemoveOwner, RemoveMemberUCImpl(householdRepo).execute(me.id))
+        assertEquals(listOf(me), householdRepo.members.value.getValue(flat.id))
+    }
+
+    @Test
+    fun deleteSelectedHouseholdSelectsAnother() = runBlocking {
+        val beach = assertIs<CreateHouseholdResult.Success>(CreateHouseholdUCImpl(householdRepo).execute("Beach")).household
+        SelectHouseholdUCImpl(householdRepo).execute(home.id)
+
+        DeleteHouseholdUCImpl(householdRepo).execute(home.id)
+
+        assertEquals(beach, householdRepo.selected.value)
     }
 }
