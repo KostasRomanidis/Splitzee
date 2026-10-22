@@ -19,7 +19,7 @@
 ## 4. iOS UI
 
 - [x] 4.1 Add a create-household view (name field, create button, error text). `HomeView` owns `@StateObject HomeViewModel`, runs `observe()` in `.task`, and shows the form for `.noHousehold` with the add button hidden; `iOSApp` creates `HomeView()` without a state. Keep a `#Preview` building. Verify on a simulator with a fresh install: the form shows, a blank name shows the error, and "Home" leads to the home screen titled "Home"
-- [ ] 4.2 Add a principal toolbar `Menu` showing the selected household's name, listing households with a checkmark, a divider and "New household", which presents the form as a sheet with Cancel. Verify on a simulator the "Household menu" and "Create another household" scenarios in `specs/household-ui/spec.md`, including that the selection survives an app restart
+- [x] 4.2 Add a principal toolbar `Menu` showing the selected household's name, listing households with a checkmark, a divider and "New household", which presents the form as a sheet with Cancel. Verify on a simulator the "Household menu" and "Create another household" scenarios in `specs/household-ui/spec.md`, including that the selection survives an app restart
 
 ## 5. Integration check
 

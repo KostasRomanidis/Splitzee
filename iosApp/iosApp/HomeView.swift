@@ -19,8 +19,14 @@ struct HomeView: View {
 
     var body: some View {
         NavigationStack {
-            content.navigationTitle(viewModel.current?.name ?? "Splitzee")
+            content.navigationTitle("Splitzee")
+                .navigationBarTitleDisplayMode(viewModel.current == nil ? .large : .inline)
                 .toolbar {
+                    if let current = viewModel.current {
+                        ToolbarItem(placement: .principal) {
+                            householdMenu(current: current)
+                        }
+                    }
                     if viewModel.state != .noHousehold {
                         ToolbarItem(placement: .primaryAction) {
                             Button(action: {
@@ -34,6 +40,50 @@ struct HomeView: View {
                 }
         }.accessibilityIdentifier("homeScreen")
             .task { await viewModel.observe() }
+            .sheet(isPresented: $viewModel.showCreateSheet, onDismiss: { viewModel.nameError = nil }) {
+                NavigationStack {
+                    CreateHouseholdForm(
+                        title: "Name",
+                        nameError: viewModel.nameError,
+                        onNameChange: { viewModel.nameError = nil },
+                        onCreate: { name in Task { await viewModel.createHousehold(name: name) } }
+                    )
+                    .navigationTitle("New household")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Cancel") { viewModel.showCreateSheet = false }
+                        }
+                    }
+                }
+            }
+    }
+
+    private func householdMenu(current: Household_) -> some View {
+        Menu {
+            Picker("Household", selection: Binding(
+                get: { current.id },
+                set: { id in Task { await viewModel.selectHousehold(id: id) } }
+            )) {
+                ForEach(viewModel.households, id: \.id) { household in
+                    Text(household.name).tag(household.id)
+                }
+            }
+            Divider()
+            Button {
+                viewModel.showCreateSheet = true
+            } label: {
+                Label("New household", systemImage: "plus")
+            }
+        } label: {
+            HStack(spacing: 4) {
+                Text(current.name).font(.headline)
+                Image(systemName: "chevron.down").font(.caption.weight(.semibold))
+            }
+            .foregroundStyle(.primary)
+        }
+        .accessibilityIdentifier("householdMenu")
+        .accessibilityLabel("Switch household, \(current.name) selected")
     }
 
     @ViewBuilder
@@ -99,6 +149,7 @@ class HomeViewModel: ObservableObject {
     @Published private(set) var households: [Household_] = []
     @Published private(set) var current: Household_? = nil
     @Published var nameError: String? = nil
+    @Published var showCreateSheet = false
 
     init(helper: UseCaseHelper = UseCaseHelper()) {
         addExpenseUC = helper.getAddExpenseUC()
@@ -139,6 +190,7 @@ class HomeViewModel: ObservableObject {
                 return false
             case .success:
                 nameError = nil
+                showCreateSheet = false
                 return true
             }
         } catch {
