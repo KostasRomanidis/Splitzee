@@ -32,35 +32,47 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.kromanid.splitzee.ui.states.HomeUiState
+import com.kromanid.splitzee.ui.states.HouseholdUiState
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    uiState: HomeUiState,
-    addExpense: () -> Unit
+    state: HouseholdUiState,
+    addExpense: () -> Unit,
+    onNameChange: () -> Unit,
+    onCreateHousehold: (String) -> Unit,
 ) {
+    val uiState = state.home
     Scaffold(
         modifier = Modifier,
         topBar = {
             CenterAlignedTopAppBar(
-                title = { Text("Splitzee") }
+                title = { Text(state.selected?.name ?: "Splitzee") }
             )
         },
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = addExpense,
-                modifier = Modifier,
-                shape = FloatingActionButtonDefaults.largeShape,
-                icon = { Icon(Icons.Default.Add, contentDescription = "Add expense") },
-                text = { Text("Add expense") }
-            )
+            if (uiState != HomeUiState.NoHousehold) {
+                ExtendedFloatingActionButton(
+                    onClick = addExpense,
+                    modifier = Modifier,
+                    shape = FloatingActionButtonDefaults.largeShape,
+                    icon = { Icon(Icons.Default.Add, contentDescription = "Add expense") },
+                    text = { Text("Add expense") }
+                )
+            }
         },
         floatingActionButtonPosition = FabPosition.Center,
     ) { paddingValues ->
         when (uiState) {
             HomeUiState.Loading -> LoadingHomeScreen(modifier = Modifier.padding(paddingValues))
-            HomeUiState.NoHousehold -> {}
+            HomeUiState.NoHousehold -> CreateHouseholdForm(
+                title = "Create your first household",
+                nameError = state.nameError,
+                onNameChange = onNameChange,
+                onCreate = onCreateHousehold,
+                modifier = Modifier.padding(paddingValues),
+            )
             HomeUiState.Empty -> EmptyHomeScreen(modifier = Modifier.padding(paddingValues))
             is HomeUiState.Expenses -> ExpensesHomeScreen(
                 modifier = Modifier.padding(paddingValues),
@@ -121,5 +133,10 @@ private fun ExpensesHomeScreen(modifier: Modifier = Modifier, expenses: List<Any
 @Preview
 @Composable
 private fun HomeScreenPreview() {
-    HomeScreen(uiState = HomeUiState.Empty) {}
+    HomeScreen(
+        state = HouseholdUiState(home = HomeUiState.Empty),
+        addExpense = {},
+        onNameChange = {},
+        onCreateHousehold = {},
+    )
 }
