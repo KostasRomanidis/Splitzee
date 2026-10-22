@@ -23,7 +23,7 @@
 
 ## 5. Integration check
 
-- [ ] 5.1 Run `openspec validate add-household-ui --strict` and `./gradlew :shared:allTests :composeApp:assembleDebug`, and verify both pass
+- [x] 5.1 Run `openspec validate add-household-ui --strict` and `./gradlew :shared:allTests :composeApp:assembleDebug`, and verify both pass
 
 ## Workflow follow-up
 
