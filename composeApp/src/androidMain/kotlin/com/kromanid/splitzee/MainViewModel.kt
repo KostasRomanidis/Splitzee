@@ -53,6 +53,8 @@ class MainViewModel(
     fun addExpense() {
         viewModelScope.launch(Dispatchers.IO) {
             val members = getMembersUC.execute().first().map { it.id }
+            // No household yet: the spec forbids creating one implicitly, and there is no household UI.
+            if (members.isEmpty()) return@launch println("No household: create one before adding expenses")
             val result = addExpenseUC.execute(
                 description = _uiState.value.description,
                 amount = Money(_uiState.value.expense),

@@ -30,12 +30,12 @@ class SummaryRulesTest {
 
     @Test
     fun total() {
-        assertEquals(Money(5750), summarize(members, listOf(expense(4500), expense(1250))).total)
+        assertEquals(Money(5750), summarize(members, emptyList(), listOf(expense(4500), expense(1250))).total)
     }
 
     @Test
     fun emptyPeriod() {
-        val summary = summarize(members, emptyList())
+        val summary = summarize(members, emptyList(), emptyList())
         assertEquals(Money.ZERO, summary.total)
         assertEquals(emptyList(), summary.byCategory)
         assertEquals(members.map { MemberSummary(it, Money.ZERO, Money.ZERO) }, summary.members)
@@ -46,6 +46,7 @@ class SummaryRulesTest {
     fun groupsCustomNamesIgnoringCaseAndWhitespace() {
         val summary = summarize(
             members,
+            emptyList(),
             listOf(
                 expense(1000, category = Category.Custom("Pet food")),
                 expense(500, category = Category.Custom(" pet food")),
@@ -63,7 +64,7 @@ class SummaryRulesTest {
 
     @Test
     fun paidAndShare() {
-        val summary = summarize(members, listOf(expense(4500)))
+        val summary = summarize(members, emptyList(), listOf(expense(4500)))
         assertEquals(
             listOf(
                 MemberSummary(ana, Money(4500), Money(2250)),
@@ -80,6 +81,7 @@ class SummaryRulesTest {
     fun balancesNetToZero() {
         val summary = summarize(
             members,
+            emptyList(),
             listOf(
                 expense(1000, paidBy = ana, split = SplitRule.Equal(listOf("ben", "ana", "cleo"))),
                 expense(5, paidBy = ben, split = SplitRule.Equal(listOf("ana", "ben", "cleo"))),
@@ -89,5 +91,22 @@ class SummaryRulesTest {
             ),
         )
         assertEquals(Money.ZERO, Money(summary.members.sumOf { it.balance.minor }))
+    }
+
+    @Test
+    fun removedPayerKeepsFiguresAndBalancesNet() {
+        val dan = Member("dan", "Dan")
+        val summary = summarize(members, listOf(dan), listOf(expense(4500, paidBy = dan, split = SplitRule.Equal(listOf("dan", "ben")))))
+
+        assertEquals(MemberSummary(dan, Money(4500), Money(2250)), summary.members.last())
+        assertEquals(4, summary.members.size)
+        assertEquals(Money.ZERO, Money(summary.members.sumOf { it.balance.minor }))
+    }
+
+    @Test
+    fun removedMemberWithoutExpensesIsAbsent() {
+        val summary = summarize(members, listOf(Member("dan", "Dan")), listOf(expense(4500)))
+
+        assertEquals(members, summary.members.map { it.member })
     }
 }

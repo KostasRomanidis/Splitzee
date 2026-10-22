@@ -19,3 +19,7 @@ sealed interface ExpenseError {
 sealed interface MemberError {
     data object BlankName : MemberError
 }
+
+sealed interface HouseholdError {
+    data object BlankName : HouseholdError
+}

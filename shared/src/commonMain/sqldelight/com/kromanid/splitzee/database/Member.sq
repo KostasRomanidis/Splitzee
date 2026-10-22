@@ -2,16 +2,30 @@ CREATE TABLE member (
     id TEXT NOT NULL PRIMARY KEY,
     household_id TEXT NOT NULL REFERENCES household(id),
     name TEXT NOT NULL,
+    is_owner INTEGER NOT NULL DEFAULT 0,
     created_at INTEGER NOT NULL,
     updated_at INTEGER NOT NULL,
     deleted_at INTEGER
 );
 
 insert:
-INSERT INTO member(id, household_id, name, created_at, updated_at)
-VALUES (?, ?, ?, ?, ?);
+INSERT INTO member(id, household_id, name, is_owner, created_at, updated_at)
+VALUES (?, ?, ?, ?, ?, ?);
 
 selectByHousehold:
 SELECT id, name FROM member
 WHERE household_id = ? AND deleted_at IS NULL
 ORDER BY created_at, rowid;
+
+selectRemovedByHousehold:
+SELECT id, name FROM member
+WHERE household_id = ? AND deleted_at IS NOT NULL
+ORDER BY created_at, rowid;
+
+selectIsOwner:
+SELECT is_owner FROM member
+WHERE household_id = ? AND id = ?;
+
+softDelete:
+UPDATE member SET deleted_at = :now, updated_at = :now
+WHERE household_id = :householdId AND id = :id AND is_owner = 0 AND deleted_at IS NULL;

@@ -20,10 +20,11 @@ import kotlin.time.Clock
 sealed interface AddExpenseResult {
     data class Success(val expense: Expense) : AddExpenseResult
     data class Invalid(val errors: List<ExpenseError>) : AddExpenseResult
+    data object NoHousehold : AddExpenseResult
 }
 
 interface AddExpenseUC {
-    /** Adds an expense to the current household. [date] defaults to today. */
+    /** Adds an expense to the selected household. [date] defaults to today. */
     suspend fun execute(
         description: String,
         amount: Money,
@@ -47,7 +48,7 @@ internal class AddExpenseUCImpl(
         split: SplitRule,
         date: LocalDate?,
     ): AddExpenseResult {
-        val household = householdRepo.current()
+        val household = householdRepo.current() ?: return AddExpenseResult.NoHousehold
         val members = householdRepo.observeMembers(household.id).first().map { it.id }.toSet()
         val expense = NewExpense(
             description, amount, category, date ?: clock.todayIn(TimeZone.currentSystemDefault()), paidBy, split,

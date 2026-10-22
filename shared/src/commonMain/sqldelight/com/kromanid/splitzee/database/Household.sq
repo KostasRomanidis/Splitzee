@@ -4,15 +4,29 @@ CREATE TABLE household (
     currency TEXT NOT NULL,
     created_at INTEGER NOT NULL,
     updated_at INTEGER NOT NULL,
+    selected_at INTEGER NOT NULL,
     deleted_at INTEGER
 );
 
 insert:
-INSERT INTO household(id, name, currency, created_at, updated_at)
-VALUES (?, ?, ?, ?, ?);
+INSERT INTO household(id, name, currency, created_at, updated_at, selected_at)
+VALUES (?, ?, ?, ?, ?, ?);
 
 selectCurrent:
 SELECT id, name, currency FROM household
 WHERE deleted_at IS NULL
-ORDER BY created_at
+ORDER BY selected_at DESC
 LIMIT 1;
+
+selectAll:
+SELECT id, name, currency FROM household
+WHERE deleted_at IS NULL
+ORDER BY created_at, rowid;
+
+select:
+UPDATE household SET selected_at = :now, updated_at = :now
+WHERE id = :id AND deleted_at IS NULL;
+
+softDelete:
+UPDATE household SET deleted_at = :now, updated_at = :now
+WHERE id = :id AND deleted_at IS NULL;
