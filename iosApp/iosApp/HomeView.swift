@@ -9,6 +9,7 @@ struct ExpenseUI: Identifiable, Equatable {
 
 enum HomeUiState: Equatable {
     case loading
+    case noHousehold
     case empty
     case content
 }
@@ -43,6 +44,8 @@ struct HomeView: View {
                     .foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+        case .noHousehold:
+            EmptyView()
         case .empty:
             EmptyExpensesView()
                 .accessibilityIdentifier("emptyState")
@@ -76,13 +79,75 @@ private struct EmptyExpensesView: View {
 }
 
 
+@MainActor
 class HomeViewModel: ObservableObject {
-    private let addExpenseUC: AddExpenseUC = UseCaseHelper().getAddExpenseUC()
-    @Published var input: String = ""
-    @Published var greetings: String = "Welcome to Splitzee!"
-    
+    private let addExpenseUC: AddExpenseUC
+    private let createHouseholdUC: CreateHouseholdUC
+    private let getHouseholdsUC: GetHouseholdsUC
+    private let getCurrentHouseholdUC: GetCurrentHouseholdUC
+    private let selectHouseholdUC: SelectHouseholdUC
+
+    @Published private(set) var state: HomeUiState = .loading
+    @Published private(set) var households: [Household_] = []
+    @Published private(set) var current: Household_? = nil
+    @Published var nameError: String? = nil
+
+    init(helper: UseCaseHelper = UseCaseHelper()) {
+        addExpenseUC = helper.getAddExpenseUC()
+        createHouseholdUC = helper.getCreateHouseholdUC()
+        getHouseholdsUC = helper.getHouseholdsUC()
+        getCurrentHouseholdUC = helper.getCurrentHouseholdUC()
+        selectHouseholdUC = helper.getSelectHouseholdUC()
+    }
+
+    /// Collects the household flows until the calling task is cancelled.
+    func observe() async {
+        async let currentLoop: Void = observeCurrent()
+        async let householdsLoop: Void = observeHouseholds()
+        _ = await (currentLoop, householdsLoop)
+    }
+
+    private func observeCurrent() async {
+        for await household in getCurrentHouseholdUC.execute() {
+            current = household
+            state = household == nil ? .noHousehold : .empty
+        }
+    }
+
+    private func observeHouseholds() async {
+        for await list in getHouseholdsUC.execute() {
+            households = list
+        }
+    }
+
+    /// Returns true when the household was created; the new household is selected by the repo.
+    func createHousehold(name: String) async -> Bool {
+        do {
+            switch onEnum(of: try await createHouseholdUC.execute(name: name)) {
+            case .invalid(let invalid):
+                switch onEnum(of: invalid.error) {
+                case .blankName: nameError = "A name is required"
+                }
+                return false
+            case .success:
+                nameError = nil
+                return true
+            }
+        } catch {
+            print("Create household failed: \(error)")
+            return false
+        }
+    }
+
+    func selectHousehold(id: String) async {
+        do {
+            try await selectHouseholdUC.execute(id: id)
+        } catch {
+            print("Select household failed: \(error)")
+        }
+    }
+
     func addExpense() {
-        print("inpt: \(input)")
         // shortcut: add-expense UI lands in the add-expense change
     }
 }
