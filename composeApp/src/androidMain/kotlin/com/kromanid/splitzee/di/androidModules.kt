@@ -10,6 +10,10 @@ val androidModules = module {
             addExpenseUC = get(),
             getExpensesUC = get(),
             getMembersUC = get(),
+            createHouseholdUC = get(),
+            getHouseholdsUC = get(),
+            getCurrentHouseholdUC = get(),
+            selectHouseholdUC = get(),
         )
     }
 }

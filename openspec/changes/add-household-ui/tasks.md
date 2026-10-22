@@ -2,7 +2,7 @@
 
 ## 1. Android viewmodel
 
-- [ ] 1.1 Inject `CreateHouseholdUC`, `GetHouseholdsUC`, `GetCurrentHouseholdUC` and `SelectHouseholdUC` into `MainViewModel` and register them in `di/androidModules.kt`. Verify `./gradlew :composeApp:assembleDebug` succeeds and the app launches without a Koin error
+- [x] 1.1 Inject `CreateHouseholdUC`, `GetHouseholdsUC`, `GetCurrentHouseholdUC` and `SelectHouseholdUC` into `MainViewModel` and register them in `di/androidModules.kt`. Verify `./gradlew :composeApp:assembleDebug` succeeds and the app launches without a Koin error
 - [ ] 1.2 Add `NoHousehold` to `HomeUiState`; in `MainViewModel` combine the current-household and households flows into one exposed state (home state, title, households, selected id), and add `createHousehold(name)` (sets a nullable blank-name error on `Invalid`, clears it and closes the dialog on `Success`), `selectHousehold(id)` and dialog open/close. Verify it compiles with `./gradlew :composeApp:assembleDebug`
 
 ## 2. Android UI

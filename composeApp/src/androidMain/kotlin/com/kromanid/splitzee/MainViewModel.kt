@@ -9,8 +9,12 @@ import com.kromanid.splitzee.models.SplitRule
 import com.kromanid.splitzee.ui.states.SplitzeeUIState
 import com.kromanid.splitzee.usecases.AddExpenseResult
 import com.kromanid.splitzee.usecases.AddExpenseUC
+import com.kromanid.splitzee.usecases.CreateHouseholdUC
+import com.kromanid.splitzee.usecases.GetCurrentHouseholdUC
 import com.kromanid.splitzee.usecases.GetExpensesUC
+import com.kromanid.splitzee.usecases.GetHouseholdsUC
 import com.kromanid.splitzee.usecases.GetMembersUC
+import com.kromanid.splitzee.usecases.SelectHouseholdUC
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +28,10 @@ class MainViewModel(
     private val addExpenseUC: AddExpenseUC,
     private val getExpensesUC: GetExpensesUC,
     private val getMembersUC: GetMembersUC,
+    private val createHouseholdUC: CreateHouseholdUC,
+    private val getHouseholdsUC: GetHouseholdsUC,
+    private val getCurrentHouseholdUC: GetCurrentHouseholdUC,
+    private val selectHouseholdUC: SelectHouseholdUC,
 ) : ViewModel() {
 
     private val _uiState: MutableStateFlow<SplitzeeUIState> =
