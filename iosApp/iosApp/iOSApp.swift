@@ -10,9 +10,7 @@ struct iOSApp: App {
     
     var body: some Scene {
         WindowGroup {
-            HomeView(
-                state: .empty
-            )
+            HomeView()
         }
     }
 }

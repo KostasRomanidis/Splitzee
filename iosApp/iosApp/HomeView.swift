@@ -15,27 +15,30 @@ enum HomeUiState: Equatable {
 }
 
 struct HomeView: View {
-    let state: HomeUiState
-    
+    @StateObject private var viewModel = HomeViewModel()
+
     var body: some View {
         NavigationStack {
-            content.navigationTitle("Splitzee")
+            content.navigationTitle(viewModel.current?.name ?? "Splitzee")
                 .toolbar {
-                    ToolbarItem(placement: .primaryAction) {
-                        Button(action: {
-                            
-                        }) {
-                            Image(systemName: "plus")
-                        }.accessibilityIdentifier("addExpenseButton")
-                            .accessibilityLabel("Add Expense")
+                    if viewModel.state != .noHousehold {
+                        ToolbarItem(placement: .primaryAction) {
+                            Button(action: {
+
+                            }) {
+                                Image(systemName: "plus")
+                            }.accessibilityIdentifier("addExpenseButton")
+                                .accessibilityLabel("Add Expense")
+                        }
                     }
                 }
         }.accessibilityIdentifier("homeScreen")
+            .task { await viewModel.observe() }
     }
-    
+
     @ViewBuilder
     private var content: some View {
-        switch state {
+        switch viewModel.state {
         case .loading:
             VStack(spacing: 12) {
                 ProgressView()
@@ -45,7 +48,12 @@ struct HomeView: View {
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         case .noHousehold:
-            EmptyView()
+            CreateHouseholdForm(
+                title: "Create your first household",
+                nameError: viewModel.nameError,
+                onNameChange: { viewModel.nameError = nil },
+                onCreate: { name in Task { await viewModel.createHousehold(name: name) } }
+            )
         case .empty:
             EmptyExpensesView()
                 .accessibilityIdentifier("emptyState")
@@ -153,7 +161,5 @@ class HomeViewModel: ObservableObject {
 }
 
 #Preview {
-    HomeView(
-        state: .empty
-    )
+    EmptyExpensesView()
 }
