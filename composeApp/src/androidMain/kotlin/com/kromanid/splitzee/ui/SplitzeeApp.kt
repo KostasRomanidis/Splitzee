@@ -5,17 +5,34 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.kromanid.splitzee.ui.screens.HomeScreen
 import com.kromanid.splitzee.ui.states.HomeUiState
+import com.kromanid.splitzee.ui.states.HouseholdUiState
 
 
 @Composable
-fun SplitzeeApp(onAddExpense: () -> Unit = {}) {
+fun SplitzeeApp(
+    state: HouseholdUiState,
+    onAddExpense: () -> Unit = {},
+    onNameChange: () -> Unit = {},
+    onCreateHousehold: (String) -> Unit = {},
+    onSelectHousehold: (String) -> Unit = {},
+    onNewHousehold: () -> Unit = {},
+    onCancelCreate: () -> Unit = {},
+) {
     MaterialTheme {
-        HomeScreen(uiState = HomeUiState.Empty, addExpense = onAddExpense)
+        HomeScreen(
+            state = state,
+            addExpense = onAddExpense,
+            onNameChange = onNameChange,
+            onCreateHousehold = onCreateHousehold,
+            onSelectHousehold = onSelectHousehold,
+            onNewHousehold = onNewHousehold,
+            onCancelCreate = onCancelCreate,
+        )
     }
 }
 
 @Preview
 @Composable
 private fun SplitzeeAppPreview() {
-    SplitzeeApp()
+    SplitzeeApp(state = HouseholdUiState(home = HomeUiState.NoHousehold))
 }

@@ -10,6 +10,11 @@ sealed interface HomeUiState {
     data object Loading : HomeUiState
 
     /**
+     * Represents no household existing yet
+     */
+    data object NoHousehold : HomeUiState
+
+    /**
      * Represents empty state (no expenses)
      */
     data object Empty : HomeUiState
